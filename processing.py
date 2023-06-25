@@ -1,12 +1,17 @@
-import streamlit as st
-from matplotlib import pyplot as plt
+import os
+import io
+import zipfile
 import numpy as np
-from numpy import exp, log10
 import matplotlib
+import streamlit as st
+from numpy import exp, log10
+from datetime import datetime
+from matplotlib import pyplot as plt
 
+st.set_page_config(layout="centered")
 matplotlib.use("Agg")
 
-def perform_ILT(file_path, alpha=10, dmin=0, interacoes=15, pontos=200, Ti=0.001, Tf=10):
+def perform_ILT(file_path, alpha=10, dmin=0, interactions=15, points=200, Ti=0.001, Tf=10):
 
     #------------------------------------------------------------------------
     # ToolBox Laplace -  Tiago Bueno de Moraes
@@ -26,12 +31,12 @@ def perform_ILT(file_path, alpha=10, dmin=0, interacoes=15, pontos=200, Ti=0.001
     # Início Código
     n = len(Mx)
 
-    T = np.logspace(log10(Ti), log10(Tf), pontos)
+    T = np.logspace(log10(Ti), log10(Tf), points)
 
     K = []
     for i in range(0, n):
         row = []
-        for j in range(0, pontos):
+        for j in range(0, points):
             row.append(exp(-t[i] / T[j]))
         K.append(row)
     K = np.array(K)
@@ -63,9 +68,9 @@ def perform_ILT(file_path, alpha=10, dmin=0, interacoes=15, pontos=200, Ti=0.001
     # matriz Lambda
     L = alpha * VV
 
-    g = np.zeros((1, pontos))
+    g = np.zeros((1, points))
 
-    for inte in range(1, interacoes + 1):
+    for inte in range(1, interactions + 1):
         Soma = O + L
 
         U, sDiag, Vh = np.linalg.svd(Soma)
@@ -118,21 +123,35 @@ def perform_ILT(file_path, alpha=10, dmin=0, interacoes=15, pontos=200, Ti=0.001
     temp_file_path = f"temp_{np.random.randint(0, 100000)}.txt"
 
     # Salvar a matriz em um arquivo temporário
-    np.savetxt(temp_file_path, np.vstack((T, g)), delimiter=" ")
+    np.savetxt(temp_file_path, np.vstack((T, g)).T, delimiter=" ")
 
     # Retorna o caminho do arquivo temporário
     return temp_file_path
 
+def save_info_file(file_path, alpha, dmin, interactions, points):
+    info_file_path = os.path.splitext(file_path)[0] + '_info.txt'
 
-def main():
+    with open(info_file_path, 'w') as f:
+        f.write('Date: ' + str(datetime.now()) + '\n')
+        f.write('ILT Streamlit [...] \n\n')
+        f.write('Parameters:\n')
+        f.write('Alpha: ' + str(alpha) + '\n')
+        f.write('Dmin: ' + str(dmin) + '\n')
+        f.write('Interactions: ' + str(interactions) + '\n')
+        f.write('Points: ' + str(points) + '\n\n')
+        f.write('Upload file: ' + file_path + '\n')
+
+    return info_file_path
+    
+def processing():
     st.title('Inverse Laplace Transform (ILT)')
 
-    # Info section
-    st.markdown('<div style="text-align: justify;">The <strong>Inverse Laplace Transform (ILT)</strong> is a mathematical transformation, which is an illposed inverse problem, that can admit multiple solutions, where the general objective is to start from a signal in the time domain </div>', unsafe_allow_html=True)
-    st.latex(r'''A(t)''')
     # File upload section
     st.header('Upload File')
     file = st.file_uploader('Upload a TXT or CSV file', type=['txt', 'csv'])
+
+    if 'ilt_performed' not in st.session_state:
+        st.session_state['ilt_performed'] = False
 
     if file is not None:
         file_path = file.name
@@ -140,16 +159,28 @@ def main():
             f.write(file.getvalue())
 
         # ILT parameters
-        alpha = st.slider('Alpha', min_value=0, max_value=100, value=10)
-        dmin = st.slider('Dmin', min_value=0, max_value=10, value=0)
-        interacoes = st.slider('Interacoes', min_value=1, max_value=30, value=15)
-        pontos = st.slider('Pontos', min_value=50, max_value=500, value=200)
+        alpha = st.number_input('Alpha', min_value=0, max_value=100, value=10)
+        dmin = st.number_input('Dmin', min_value=0, max_value=10, value=0)
+        interactions = st.number_input('Interactions', min_value=1, max_value=30, value=15)
+        points = st.number_input('Points', min_value=50, max_value=500, value=200)
 
         if st.button('Perform ILT'):
-            modified_file_path = perform_ILT(file_path, alpha, dmin, interacoes, pontos)
+            modified_file_path = perform_ILT(file_path, alpha, dmin, interactions, points)
+            info_file_path = save_info_file(file_path, alpha, dmin, interactions, points)
             st.success('ILT performed successfully!')
-            st.download_button(label='Download ILT performed', data=open(modified_file_path, 'rb').read(), file_name="ILT_file.txt", mime="text/plain")
+            st.session_state['ilt_performed'] = True
+
+            if st.session_state['ilt_performed']:
+                # Zip file with results
+                zip_file = io.BytesIO()
+                with zipfile.ZipFile(zip_file, 'w') as zf:
+                    zf.writestr('ILT_results.txt', open(modified_file_path, 'r').read())
+                    zf.writestr('ILT_info.txt', open(info_file_path, 'r').read())
+                zip_file.seek(0)
+
+                # Download buttom
+                st.download_button(label='Download ILT Files', data=zip_file, file_name='ILT_files.zip', mime='application/zip')
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
