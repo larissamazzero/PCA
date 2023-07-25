@@ -1,9 +1,75 @@
+#####################################
+#####################################
+## Project: ILT                    ##
+##         Streamlit               ##
+#####################################
+## Description:                    ##
+## This script was made to apply   ##
+## the Inverse Laplace Transform   ##
+## on CPMG, IR and SR data         ##
+#####################################
+## Version:  1.0                   ##
+## Revision: 1.0                   ##
+## Date: 07/13/2023                ##
+#####################################
+## Requirements:                   ##
+##                                 ##
+##  - matplotlib = 3.7.2		   ##
+##  - numpy = 1.25.1		       ##
+##  - streamlit = 1.24.1		   ##
+##  - streamlit-option-menu = 0.3.6##
+##  - plotly = 5.15.0       	   ##
+##  - secure-smtplib = 0.1.1       ##
+##  - python-dotenv = 1.0.0        ##
+##                                 ##
+##     //--- INTRUCTIONS ---//     ##
+##                                 ##
+##  pip install matplotlib==3.7.2  ##
+##  pip install numpy==1.25.1      ##
+##  pip install streamlit==1.24.1  ##
+##  pip install streamlit-option-  ##
+## menu==0.3.6                     ##
+##  pip install plotly==5.15.0     ##
+##  pip install secure-smtlib==0.1.1#
+##  pip install python-dotenv==1.0.0#
+##				                   ##
+#####################################
+## Script Development:             ##
+##                                 ##
+## - Tiago Bueno de Moraes         ##
+##  [Developer]		               ##
+##                                 ##
+## - William Silva Mendes          ##
+##  [Developer]		               ##
+##                                 ##
+## - Larissa Perosso Mazzero       ##
+##  [Developer]		               ##
+##                                 ##
+##  [07/13/2023]                   ##
+#####################################
+## Modifications:                  ##
+## 01. <NAME>                      ##
+##     <COMPANY>                   ##
+##     <SECTOR>                    ##
+##     <DATE>                      ##
+##     <MODIFICATIONS MADE>        ##
+##				                   ##
+##                                 ##
+#####################################
+#####################################
+
+##################################
+### Import Libraries
+##################################
 import streamlit as st 
 from streamlit_option_menu import option_menu
 from processing import processing 
 from citation import citation
 from contact import contact
 
+##################################
+### Configurations
+##################################
 with st.sidebar:
     selected = option_menu(
         menu_title="Navegation",
@@ -12,11 +78,16 @@ with st.sidebar:
         menu_icon="cast",
         default_index=0,
     )
+    st.info("This web platform is free and open source and you are very welcome to contribute. Please contact us!")
 
+##################################
+## This function will orchestrate the Streamlit App
+##
+##
 if selected == "Home":
     st.title('Inverse Laplace Transform (ILT)')
     r'''
-    The Inverse Laplace Transform (ILT) is a mathematical transformation, which is an illposed inverse problem, 
+    The **Inverse Laplace Transform (ILT)** is a mathematical transformation, which is an illposed inverse problem, 
     that can admit multiple solutions, where the general objective is to start from a signal in the time domain $$A(t)$$
     we want to obtain the distribution of relaxation times $$g(T)$$.
         '''
@@ -38,10 +109,22 @@ if selected == "Home":
     r'''
     *Moraes, T.B.; *Transformada Inversa de Laplace para análise de sinais de Ressonância Magnética Nuclear de Baixo Campo, *Química Nova*, vol. 44, n. 8, p. 1020-1027, 2021. ([Link](http://dx.doi.org/10.21577/0100-4042.20170751))
     '''
+    st.markdown("[![ILT.png](https://i.postimg.cc/W1HxWjw9/ILT.png)](https://postimg.cc/PC16JgcZ)")
+    st.write("_**Figure 1.** ILT process_")
+
+    st.subheader("Suporters")
+    st.markdown("[![CNPQ.jpg](https://i.postimg.cc/6Q2rHQNN/CNPQ.jpg)](https://postimg.cc/FfvkzNRP) [![ifsp.jpg](https://i.postimg.cc/3RWxjyMg/ifsp.jpg)](https://postimg.cc/zbZN8GGB) [![ESALQ.png](https://i.postimg.cc/4dKbxkDS/ESALQ.png)](https://postimg.cc/S2hzg5N6)")
+
 if selected == "Processing":
     processing()
 if selected == "Citation":
     citation()
 if selected == "Contact":
     contact()
-    
+##################################
+
+##################################
+##################################
+#######     CODE END       #######
+##################################
+##################################    
