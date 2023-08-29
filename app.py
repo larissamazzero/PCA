@@ -30,7 +30,7 @@
 ##  pip install streamlit-option-  ##
 ## menu==0.3.6                     ##
 ##  pip install plotly==5.15.0     ##
-##  pip install secure-smtlib==0.1.1#
+##  pip install secure-smtplib==0.1.1#
 ##  pip install python-dotenv==1.0.0#
 ##				                   ##
 #####################################
@@ -61,15 +61,21 @@
 ##################################
 ### Import Libraries
 ##################################
+
 import streamlit as st 
 from streamlit_option_menu import option_menu
 from processing import processing 
 from citation import citation
 from contact import contact
 
+st.set_page_config(layout="centered", 
+                   page_title="Inverse Laplace Transform", 
+                   page_icon="chart_with_upwards_trend"
+                   )
 ##################################
 ### Configurations
 ##################################
+
 with st.sidebar:
     selected = option_menu(
         menu_title="Navegation",
@@ -113,14 +119,28 @@ if selected == "Home":
     st.write("_**Figure 1.** ILT process_")
 
     st.subheader("Suporters")
-    st.markdown("[![CNPQ.jpg](https://i.postimg.cc/6Q2rHQNN/CNPQ.jpg)](https://postimg.cc/FfvkzNRP) [![ifsp.jpg](https://i.postimg.cc/3RWxjyMg/ifsp.jpg)](https://postimg.cc/zbZN8GGB) [![ESALQ.png](https://i.postimg.cc/4dKbxkDS/ESALQ.png)](https://postimg.cc/S2hzg5N6)")
+    st.write("Developed by T. B. Moraes, L. P. Mazzero, W. S. Mendes")
+    col1, col2, col3 = st.columns(3)
 
+    with col1:
+        st.markdown("[![CNPQ.jpg](https://i.postimg.cc/6Q2rHQNN/CNPQ.jpg)](http://portal.cnpq.br/)")
+        st.markdown("\n")
+        st.markdown("\n")
+        st.markdown("[![ESALQ.png](https://i.postimg.cc/4dKbxkDS/ESALQ.png)](https://www.esalq.usp.br/)")
+    with col2:
+        st.markdown("[![IFSP.png](https://i.postimg.cc/3RWxjyMg/ifsp.jpg)](https://prc.ifsp.edu.br/)")
+    with col3:
+        st.markdown("[![USP.jpg](https://i.postimg.cc/jqBddKRy/USP.jpg)](https://www5.usp.br/)")
+   
 if selected == "Processing":
     processing()
 if selected == "Citation":
     citation()
 if selected == "Contact":
     contact()
+
+
+
 ##################################
 
 ##################################

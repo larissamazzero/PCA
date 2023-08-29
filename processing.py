@@ -31,7 +31,7 @@
 ##  pip install streamlit-option-  ##
 ## menu==0.3.6                     ##
 ##  pip install plotly==5.15.0     ##
-##  pip install secure-smtlib==0.1.1#
+##  pip install secure-smtplib==0.1.1#
 ##  pip install python-dotenv==1.0.0#
 ## pip install kaleido==0.2.1      ##
 ##				                   ##
@@ -81,8 +81,8 @@ import plotly.graph_objects as go
 ### Configurations
 ##################################
 
-locale.setlocale(locale.LC_ALL, "en_US")
-st.set_page_config(layout="centered")
+# locale.setlocale(locale.LC_ALL, "en_US")
+
 matplotlib.use("Agg")
 
 ##################################
@@ -327,10 +327,14 @@ def perform_ILT(file_path, alpha=10, dmin=0, interactions=15, points=200, Ti=0.0
     st.plotly_chart(fig4)
 
     # Generate a unique file name
-    temp_file_path = f"temp_{np.random.randint(0, 100000)}.txt"
+    temp_file_path1 = f"temp_{np.random.randint(0, 100000)}.txt"
+    temp_file_path2 = f"temp_{np.random.randint(0, 100000)}.txt"
+    temp_file_path3 = f"temp_{np.random.randint(0, 100000)}.txt"
 
     # Saving the matrix in a temporary file 
-    np.savetxt(temp_file_path, np.vstack((T, g)).T, delimiter=" ")
+    np.savetxt(temp_file_path1, np.vstack((T, g)).T, delimiter=" ")
+    np.savetxt(temp_file_path2, fitting_g.T, delimiter=" ")
+    np.savetxt(temp_file_path3, residue.T, delimiter=" ")
 
     # Save figures as PNG images to BytesIO objects
     fig1_bytesio = io.BytesIO()
@@ -351,7 +355,7 @@ def perform_ILT(file_path, alpha=10, dmin=0, interactions=15, points=200, Ti=0.0
     fig4_bytesio.seek(0)
 
     # Return the file's path
-    return temp_file_path, fig1_bytesio, fig2_bytesio, fig3_bytesio, fig4_bytesio
+    return temp_file_path1, temp_file_path2, temp_file_path3, fig1_bytesio, fig2_bytesio, fig3_bytesio, fig4_bytesio
 ##################################
 
 ##################################
@@ -411,13 +415,13 @@ def processing():
             normalization = st.checkbox('Normalization', value=False, help='This checkbox will divides the signal by the first point.')
             remove_points_of_the_begin = st.number_input('**Remove points of the begin:**', value=0, help='The number of points to remove from the beginning of the signal.')
         kernel = st.selectbox('**Kernel Type:**', ['CPMG [exp(-t/T)]', 'IR [1-2*exp(-t/T)]', 'SR [1-exp(-t/T)]'], help='The type of kernel to use.')
-        alpha = st.number_input('**Alpha:**', value=10, help='The alpha value for the kernel.')
+        alpha = st.number_input('**Alpha:**', value=1, help='The alpha value for the kernel.')
         ti = st.number_input('**Starting T value:**', value=0.001, format='%.3f', help='The starting T value for the signal.')
         tf = st.number_input('**Ending T value:**', value=10, help='The ending T value for the signal.')
-        points = st.number_input('**Points:**', value=200, help='The number of points to use in the signal.')
+        points = st.number_input('**Points:**', value=100, help='The number of points to use in the signal.')
 
         if st.button('Perform ILT'):
-            modified_file_path, fig1_bytesio, fig2_bytesio, fig3_bytesio, fig4_bytesio = perform_ILT(file_path=file_path, alpha=alpha, Ti=ti, Tf=tf, points=points, kernel=kernel, force=force, time_axis=time_axis, normalization=normalization, remove_points_of_the_begin=remove_points_of_the_begin)
+            results_file_path, fitting_file_path, residue_file_path, fig1_bytesio, fig2_bytesio, fig3_bytesio, fig4_bytesio = perform_ILT(file_path=file_path, alpha=alpha, Ti=ti, Tf=tf, points=points, kernel=kernel, force=force, time_axis=time_axis, normalization=normalization, remove_points_of_the_begin=remove_points_of_the_begin)
             info_file_path = save_info_file(file_path, alpha, ti, tf, points, kernel, force, time_axis, normalization, remove_points_of_the_begin)
             st.session_state['ilt_performed'] = True
 
@@ -427,7 +431,9 @@ def processing():
                 # Zip file with results
                 zip_file = io.BytesIO()
                 with zipfile.ZipFile(zip_file, 'w') as zf:
-                    zf.writestr('ILT_results.txt', open(modified_file_path, 'r').read())
+                    zf.writestr('ILT_results.txt', open(results_file_path, 'r').read())
+                    zf.writestr('Fitting.txt', open(fitting_file_path, 'r').read())
+                    zf.writestr('Residues.txt', open(residue_file_path, 'r').read())
                     zf.writestr('ILT_info.txt', open(info_file_path, 'r').read())
                     # Add the figures to the zip file
                     zf.writestr('Signal.png', fig1_bytesio.read())

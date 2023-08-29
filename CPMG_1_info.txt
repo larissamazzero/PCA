@@ -1,11 +1,11 @@
 Performed by 
 ILT Streamlit [...] 
 
-Date: 2023-07-25 14:58:31.368690
+Date: 2023-08-04 13:24:14.743422
 
 ========= Pre-processing data signal =========
 
-Time axis in: seconds
+Time axis in: milliseconds
 Force to Zero/Center: False
 Normalization: False
 Total points of the begin removed: 0
@@ -13,10 +13,10 @@ Total points of the begin removed: 0
 ============== Parameters ====================
 
 Kernel type: CPMG [exp(-t/T)]
-Alpha: 10
+Alpha: 1
 Ti: 0.001
 Tf: 10
-Points: 200
+Points: 100
 
 ==============================================
 

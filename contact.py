@@ -30,7 +30,7 @@
 ##  pip install streamlit-option-  ##
 ## menu==0.3.6                     ##
 ##  pip install plotly==5.15.0     ##
-##  pip install secure-smtlib==0.1.1#
+##  pip install secure-smtplib==0.1.1#
 ##  pip install python-dotenv==1.0.0#
 ##				                   ##
 #####################################
